@@ -44,11 +44,17 @@ interface Producto {
   precio_producto: string | null;
   foto1_producto: string | null;
   foto2_producto: string | null;
+  id_marca_producto: number | null;
 }
 
 interface Categoria {
   id_categoria_producto: number;
   nombre_categoria_producto: string;
+}
+
+interface Marca {
+  id_marca_producto: number;
+  nombre_marca_producto: string;
 }
 
 interface ProductoForm {
@@ -61,6 +67,7 @@ interface ProductoForm {
   precio_producto: string;
   foto1_producto: string;
   foto2_producto: string;
+  id_marca_producto: string;
 }
 
 export default function ProductosPage() {
@@ -68,6 +75,7 @@ export default function ProductosPage() {
   const [loading, setLoading] = useState(true);
   const [productos, setProductos] = useState<Producto[]>([]);
   const [categorias, setCategorias] = useState<Categoria[]>([]);
+  const [marcas, setMarcas] = useState<Marca[]>([]);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
@@ -76,6 +84,7 @@ export default function ProductosPage() {
   const [selectedProducto, setSelectedProducto] = useState<Producto | null>(
     null
   );
+  const [filtroCategoria, setFiltroCategoria] = useState<string>("todas");
   const [formData, setFormData] = useState<ProductoForm>({
     codigo_producto: "",
     nombre_producto: "",
@@ -86,6 +95,7 @@ export default function ProductosPage() {
     precio_producto: "",
     foto1_producto: "",
     foto2_producto: "",
+    id_marca_producto: "",
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -96,12 +106,15 @@ export default function ProductosPage() {
     }
     fetchProductos();
     fetchCategorias();
+    fetchMarcas();
     setLoading(false);
   }, [router]);
 
   const fetchProductos = async () => {
     try {
-      const res = await fetch("http://localhost:3001/api/productos");
+      const res = await fetch(
+        "https://taller-franco-backend.vercel.app/api/productos"
+      );
       const data = await res.json();
       console.log(data);
       setProductos(data);
@@ -112,12 +125,27 @@ export default function ProductosPage() {
 
   const fetchCategorias = async () => {
     try {
-      const res = await fetch("http://localhost:3001/api/categorias");
+      const res = await fetch(
+        "https://taller-franco-backend.vercel.app/api/categorias"
+      );
       const data = await res.json();
       console.log("Categorías:", data);
       setCategorias(data);
     } catch (error) {
       console.error("Error al obtener categorías:", error);
+    }
+  };
+
+  const fetchMarcas = async () => {
+    try {
+      const res = await fetch(
+        "https://taller-franco-backend.vercel.app/api/marcas_producto"
+      );
+      const data = await res.json();
+      console.log("Marcas:", data);
+      setMarcas(data);
+    } catch (error) {
+      console.error("Error al obtener marcas:", error);
     }
   };
 
@@ -131,6 +159,12 @@ export default function ProductosPage() {
       : `ID: ${idCategoria}`;
   };
 
+  const getMarcaNombre = (idMarca: number | null) => {
+    if (!idMarca) return "-";
+    const marca = marcas.find((m) => m.id_marca_producto === idMarca);
+    return marca ? marca.nombre_marca_producto : `ID: ${idMarca}`;
+  };
+
   const resetForm = () => {
     setFormData({
       codigo_producto: "",
@@ -142,6 +176,7 @@ export default function ProductosPage() {
       precio_producto: "",
       foto1_producto: "",
       foto2_producto: "",
+      id_marca_producto: "",
     });
   };
 
@@ -152,29 +187,35 @@ export default function ProductosPage() {
   const handleCreateProducto = async () => {
     setIsSubmitting(true);
     try {
-      const res = await fetch("http://localhost:3001/api/productos", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          codigo_producto: formData.codigo_producto || null,
-          nombre_producto: formData.nombre_producto || null,
-          descripcion_producto: formData.descripcion_producto || null,
-          id_categoria_producto: formData.id_categoria_producto
-            ? parseInt(formData.id_categoria_producto)
-            : null,
-          stock_producto: formData.stock_producto
-            ? parseInt(formData.stock_producto)
-            : null,
-          stock_minimo_producto: formData.stock_minimo_producto
-            ? parseInt(formData.stock_minimo_producto)
-            : null,
-          precio_producto: formData.precio_producto || null,
-          foto1_producto: formData.foto1_producto || null,
-          foto2_producto: formData.foto2_producto || null,
-        }),
-      });
+      const res = await fetch(
+        "https://taller-franco-backend.vercel.app/api/productos",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            codigo_producto: formData.codigo_producto || null,
+            nombre_producto: formData.nombre_producto || null,
+            descripcion_producto: formData.descripcion_producto || null,
+            id_categoria_producto: formData.id_categoria_producto
+              ? parseInt(formData.id_categoria_producto)
+              : null,
+            stock_producto: formData.stock_producto
+              ? parseInt(formData.stock_producto)
+              : null,
+            stock_minimo_producto: formData.stock_minimo_producto
+              ? parseInt(formData.stock_minimo_producto)
+              : null,
+            precio_producto: formData.precio_producto || null,
+            foto1_producto: formData.foto1_producto || null,
+            foto2_producto: formData.foto2_producto || null,
+            id_marca_producto: formData.id_marca_producto
+              ? parseInt(formData.id_marca_producto)
+              : null,
+          }),
+        }
+      );
 
       if (res.ok) {
         const newProducto = await res.json();
@@ -219,7 +260,7 @@ export default function ProductosPage() {
     setIsSubmitting(true);
     try {
       const res = await fetch(
-        `http://localhost:3001/api/productos/${selectedProducto.id_producto}`,
+        `https://taller-franco-backend.vercel.app/api/productos/${selectedProducto.id_producto}`,
         {
           method: "PUT",
           headers: {
@@ -241,6 +282,9 @@ export default function ProductosPage() {
             precio_producto: formData.precio_producto || null,
             foto1_producto: formData.foto1_producto || null,
             foto2_producto: formData.foto2_producto || null,
+            id_marca_producto: formData.id_marca_producto
+              ? parseInt(formData.id_marca_producto)
+              : null,
           }),
         }
       );
@@ -292,7 +336,7 @@ export default function ProductosPage() {
 
     try {
       const res = await fetch(
-        `http://localhost:3001/api/productos/${selectedProducto.id_producto}`,
+        `https://taller-franco-backend.vercel.app/api/productos/${selectedProducto.id_producto}`,
         {
           method: "DELETE",
         }
@@ -344,6 +388,7 @@ export default function ProductosPage() {
       precio_producto: producto.precio_producto || "",
       foto1_producto: producto.foto1_producto || "",
       foto2_producto: producto.foto2_producto || "",
+      id_marca_producto: producto.id_marca_producto?.toString() || "",
     });
     setEditDialogOpen(true);
   };
@@ -375,6 +420,15 @@ export default function ProductosPage() {
   const showEditConfirmation = () => {
     setConfirmEditDialogOpen(true);
   };
+
+  // Filtrar productos por categoría
+  const productosFiltrados =
+    filtroCategoria === "todas"
+      ? productos
+      : productos.filter(
+          (producto) =>
+            producto.id_categoria_producto?.toString() === filtroCategoria
+        );
 
   if (loading) {
     return (
@@ -408,6 +462,29 @@ export default function ProductosPage() {
                     <DialogTitle>Agregar Producto</DialogTitle>
                   </DialogHeader>
                   <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="marca">Marca</Label>
+                      <Select
+                        value={formData.id_marca_producto}
+                        onValueChange={(value) =>
+                          handleInputChange("id_marca_producto", value)
+                        }
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Seleccionar marca" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {marcas.map((marca) => (
+                            <SelectItem
+                              key={marca.id_marca_producto}
+                              value={marca.id_marca_producto.toString()}
+                            >
+                              {marca.nombre_marca_producto}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
                     <div className="space-y-2">
                       <Label htmlFor="codigo">Código</Label>
                       <Input
@@ -554,10 +631,59 @@ export default function ProductosPage() {
                 </DialogContent>
               </Dialog>
             </div>
+
+            {/* Filtro por categoría */}
+            <div className="mb-6">
+              <div className="flex items-center gap-4">
+                <Label
+                  htmlFor="filtro-categoria"
+                  className="text-sm font-medium"
+                >
+                  Filtrar por categoría:
+                </Label>
+                <Select
+                  value={filtroCategoria}
+                  onValueChange={setFiltroCategoria}
+                >
+                  <SelectTrigger className="w-64">
+                    <SelectValue placeholder="Todas las categorías" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="todas">Todas las categorías</SelectItem>
+                    {categorias.map((categoria) => (
+                      <SelectItem
+                        key={categoria.id_categoria_producto}
+                        value={categoria.id_categoria_producto.toString()}
+                      >
+                        {categoria.nombre_categoria_producto}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                {filtroCategoria !== "todas" && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setFiltroCategoria("todas")}
+                    className="flex items-center gap-1"
+                  >
+                    <X className="w-4 h-4" />
+                    Limpiar filtro
+                  </Button>
+                )}
+              </div>
+              {filtroCategoria !== "todas" && (
+                <p className="text-sm text-gray-600 mt-2">
+                  Mostrando {productosFiltrados.length} de {productos.length}{" "}
+                  productos
+                </p>
+              )}
+            </div>
             <div className="overflow-x-auto">
               <Table>
                 <TableHeader>
                   <TableRow>
+                    <TableHead>Marca</TableHead>
                     <TableHead>Código</TableHead>
                     <TableHead>Nombre</TableHead>
                     <TableHead>Descripción</TableHead>
@@ -570,7 +696,7 @@ export default function ProductosPage() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {productos.map((producto, index) => (
+                  {productosFiltrados.map((producto, index) => (
                     <TableRow
                       key={
                         producto.id_producto
@@ -578,6 +704,9 @@ export default function ProductosPage() {
                           : `producto-${index}`
                       }
                     >
+                      <TableCell>
+                        {getMarcaNombre(producto.id_marca_producto)}
+                      </TableCell>
                       <TableCell>{producto.codigo_producto || "-"}</TableCell>
                       <TableCell>{producto.nombre_producto || "-"}</TableCell>
                       <TableCell>
@@ -644,6 +773,29 @@ export default function ProductosPage() {
             <DialogTitle>Editar Producto</DialogTitle>
           </DialogHeader>
           <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="edit-marca">Marca</Label>
+              <Select
+                value={formData.id_marca_producto}
+                onValueChange={(value) =>
+                  handleInputChange("id_marca_producto", value)
+                }
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Seleccionar marca" />
+                </SelectTrigger>
+                <SelectContent>
+                  {marcas.map((marca) => (
+                    <SelectItem
+                      key={marca.id_marca_producto}
+                      value={marca.id_marca_producto.toString()}
+                    >
+                      {marca.nombre_marca_producto}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
             <div className="space-y-2">
               <Label htmlFor="edit-codigo">Código</Label>
               <Input
@@ -836,6 +988,16 @@ export default function ProductosPage() {
                   ? `Q${formData.precio_producto}`
                   : "No especificado"}
               </p>
+              <p>
+                <strong>Marca:</strong>{" "}
+                {formData.id_marca_producto
+                  ? marcas.find(
+                      (m) =>
+                        m.id_marca_producto.toString() ===
+                        formData.id_marca_producto
+                    )?.nombre_marca_producto
+                  : "No especificada"}
+              </p>
             </div>
           </div>
           <div className="flex justify-end gap-2">
@@ -907,6 +1069,16 @@ export default function ProductosPage() {
                 {formData.precio_producto
                   ? `Q${formData.precio_producto}`
                   : "No especificado"}
+              </p>
+              <p>
+                <strong>Marca:</strong>{" "}
+                {formData.id_marca_producto
+                  ? marcas.find(
+                      (m) =>
+                        m.id_marca_producto.toString() ===
+                        formData.id_marca_producto
+                    )?.nombre_marca_producto
+                  : "No especificada"}
               </p>
             </div>
           </div>
