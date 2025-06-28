@@ -1,3 +1,5 @@
+import { API_ENDPOINTS } from "./config";
+
 // Servicio de autenticación
 export interface LoginCredentials {
   email: string;
@@ -16,7 +18,7 @@ export const authService = {
     try {
       // Aquí deberías hacer la llamada a tu backend de Node.js
       //INCIALMENTE SE HACE UNA LLAMADA A LA API DE NODE.JS EN MI LOCALHOST
-      const response = await fetch("http://localhost:3001/api/auth/login", {
+      const response = await fetch(API_ENDPOINTS.AUTH.LOGIN, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

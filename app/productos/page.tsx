@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { authService } from "@/lib/auth";
+import { API_ENDPOINTS } from "@/lib/config";
 import Header from "@/components/Header";
 import { Button } from "@/components/ui/button";
 import {
@@ -112,9 +113,7 @@ export default function ProductosPage() {
 
   const fetchProductos = async () => {
     try {
-      const res = await fetch(
-        "https://taller-franco-backend.vercel.app/api/productos"
-      );
+      const res = await fetch(API_ENDPOINTS.PRODUCTOS.BASE);
       const data = await res.json();
       console.log(data);
       setProductos(data);
@@ -125,9 +124,7 @@ export default function ProductosPage() {
 
   const fetchCategorias = async () => {
     try {
-      const res = await fetch(
-        "https://taller-franco-backend.vercel.app/api/categorias"
-      );
+      const res = await fetch(API_ENDPOINTS.PRODUCTOS.CATEGORIAS);
       const data = await res.json();
       console.log("Categorías:", data);
       setCategorias(data);
@@ -138,9 +135,7 @@ export default function ProductosPage() {
 
   const fetchMarcas = async () => {
     try {
-      const res = await fetch(
-        "https://taller-franco-backend.vercel.app/api/marcas_producto"
-      );
+      const res = await fetch(API_ENDPOINTS.PRODUCTOS.MARCAS);
       const data = await res.json();
       console.log("Marcas:", data);
       setMarcas(data);
@@ -187,35 +182,32 @@ export default function ProductosPage() {
   const handleCreateProducto = async () => {
     setIsSubmitting(true);
     try {
-      const res = await fetch(
-        "https://taller-franco-backend.vercel.app/api/productos",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            codigo_producto: formData.codigo_producto || null,
-            nombre_producto: formData.nombre_producto || null,
-            descripcion_producto: formData.descripcion_producto || null,
-            id_categoria_producto: formData.id_categoria_producto
-              ? parseInt(formData.id_categoria_producto)
-              : null,
-            stock_producto: formData.stock_producto
-              ? parseInt(formData.stock_producto)
-              : null,
-            stock_minimo_producto: formData.stock_minimo_producto
-              ? parseInt(formData.stock_minimo_producto)
-              : null,
-            precio_producto: formData.precio_producto || null,
-            foto1_producto: formData.foto1_producto || null,
-            foto2_producto: formData.foto2_producto || null,
-            id_marca_producto: formData.id_marca_producto
-              ? parseInt(formData.id_marca_producto)
-              : null,
-          }),
-        }
-      );
+      const res = await fetch(API_ENDPOINTS.PRODUCTOS.BASE, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          codigo_producto: formData.codigo_producto || null,
+          nombre_producto: formData.nombre_producto || null,
+          descripcion_producto: formData.descripcion_producto || null,
+          id_categoria_producto: formData.id_categoria_producto
+            ? parseInt(formData.id_categoria_producto)
+            : null,
+          stock_producto: formData.stock_producto
+            ? parseInt(formData.stock_producto)
+            : null,
+          stock_minimo_producto: formData.stock_minimo_producto
+            ? parseInt(formData.stock_minimo_producto)
+            : null,
+          precio_producto: formData.precio_producto || null,
+          foto1_producto: formData.foto1_producto || null,
+          foto2_producto: formData.foto2_producto || null,
+          id_marca_producto: formData.id_marca_producto
+            ? parseInt(formData.id_marca_producto)
+            : null,
+        }),
+      });
 
       if (res.ok) {
         const newProducto = await res.json();
@@ -260,7 +252,7 @@ export default function ProductosPage() {
     setIsSubmitting(true);
     try {
       const res = await fetch(
-        `https://taller-franco-backend.vercel.app/api/productos/${selectedProducto.id_producto}`,
+        `${API_ENDPOINTS.PRODUCTOS.BASE}/${selectedProducto.id_producto}`,
         {
           method: "PUT",
           headers: {
@@ -336,7 +328,7 @@ export default function ProductosPage() {
 
     try {
       const res = await fetch(
-        `https://taller-franco-backend.vercel.app/api/productos/${selectedProducto.id_producto}`,
+        `${API_ENDPOINTS.PRODUCTOS.BASE}/${selectedProducto.id_producto}`,
         {
           method: "DELETE",
         }
