@@ -444,24 +444,24 @@ export default function ProductosPage() {
   return (
     <div className="min-h-screen bg-gray-50">
       <Header title="Gestión de Productos - Taller Franco" />
-      <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-        <div className="px-4 py-6 sm:px-0">
-          <div className="bg-white shadow rounded-lg p-6">
-            <div className="flex justify-between items-center mb-6">
-              <h2 className="text-2xl font-bold text-gray-900">
+      <main className="max-w-7xl mx-auto py-4 sm:py-6 px-2 sm:px-6 lg:px-8">
+        <div className="px-2 sm:px-0">
+          <div className="bg-white shadow rounded-lg p-4 sm:p-6">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+              <h2 className="text-xl sm:text-2xl font-bold text-gray-900">
                 Gestión de Productos
               </h2>
               <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
                 <DialogTrigger asChild>
-                  <Button className="flex items-center gap-2">
+                  <Button className="flex items-center gap-2 w-full sm:w-auto">
                     <Plus className="w-4 h-4" /> Agregar Producto
                   </Button>
                 </DialogTrigger>
-                <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+                <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto mx-4">
                   <DialogHeader>
                     <DialogTitle>Agregar Producto</DialogTitle>
                   </DialogHeader>
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div className="space-y-2">
                       <Label htmlFor="marca">Marca</Label>
                       <Select
@@ -507,7 +507,7 @@ export default function ProductosPage() {
                         placeholder="Ingrese el nombre del producto"
                       />
                     </div>
-                    <div className="space-y-2 col-span-2">
+                    <div className="space-y-2 col-span-1 sm:col-span-2">
                       <Label htmlFor="descripcion">Descripción</Label>
                       <Textarea
                         id="descripcion"
@@ -610,19 +610,20 @@ export default function ProductosPage() {
                       />
                     </div>
                   </div>
-                  <div className="flex justify-end gap-2 mt-6">
+                  <div className="flex flex-col sm:flex-row justify-end gap-2 mt-6">
                     <Button
                       variant="outline"
                       onClick={() => {
                         setDialogOpen(false);
                         resetForm();
                       }}
+                      className="w-full sm:w-auto"
                     >
                       Cancelar
                     </Button>
                     <Button
                       onClick={showCreateConfirmation}
-                      className="flex items-center gap-2"
+                      className="flex items-center gap-2 w-full sm:w-auto"
                     >
                       <Save className="w-4 h-4" />
                       Guardar
@@ -634,7 +635,7 @@ export default function ProductosPage() {
 
             {/* Filtro por categoría */}
             <div className="mb-6">
-              <div className="flex items-center gap-4">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
                 <Label
                   htmlFor="filtro-categoria"
                   className="text-sm font-medium"
@@ -645,7 +646,7 @@ export default function ProductosPage() {
                   value={filtroCategoria}
                   onValueChange={setFiltroCategoria}
                 >
-                  <SelectTrigger className="w-64">
+                  <SelectTrigger className="w-full sm:w-64">
                     <SelectValue placeholder="Todas las categorías" />
                   </SelectTrigger>
                   <SelectContent>
@@ -665,7 +666,7 @@ export default function ProductosPage() {
                     variant="outline"
                     size="sm"
                     onClick={() => setFiltroCategoria("todas")}
-                    className="flex items-center gap-1"
+                    className="flex items-center gap-1 w-full sm:w-auto"
                   >
                     <X className="w-4 h-4" />
                     Limpiar filtro
@@ -679,88 +680,105 @@ export default function ProductosPage() {
                 </p>
               )}
             </div>
+
+            {/* Tabla responsive */}
             <div className="overflow-x-auto">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Marca</TableHead>
-                    <TableHead>Código</TableHead>
-                    <TableHead>Nombre</TableHead>
-                    <TableHead>Descripción</TableHead>
-                    <TableHead>Categoría</TableHead>
-                    <TableHead>Stock</TableHead>
-                    <TableHead>Precio</TableHead>
-                    <TableHead>Foto 1</TableHead>
-                    <TableHead>Foto 2</TableHead>
-                    <TableHead className="text-center">Acciones</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {productosFiltrados.map((producto, index) => (
-                    <TableRow
-                      key={
-                        producto.id_producto
-                          ? String(producto.id_producto)
-                          : `producto-${index}`
-                      }
-                    >
-                      <TableCell>
-                        {getMarcaNombre(producto.id_marca_producto)}
-                      </TableCell>
-                      <TableCell>{producto.codigo_producto || "-"}</TableCell>
-                      <TableCell>{producto.nombre_producto || "-"}</TableCell>
-                      <TableCell>
-                        {producto.descripcion_producto || "-"}
-                      </TableCell>
-                      <TableCell>
-                        {getCategoriaNombre(producto.id_categoria_producto)}
-                      </TableCell>
-                      <TableCell>{producto.stock_producto || "-"}</TableCell>
-                      <TableCell>
-                        {producto.precio_producto
-                          ? `Q${producto.precio_producto}`
-                          : "-"}
-                      </TableCell>
-                      <TableCell>
-                        <img
-                          src={
-                            producto.foto1_producto || "/placeholder-image.jpg"
-                          }
-                          alt="foto"
-                          className="w-12 h-12 object-cover rounded"
-                        />
-                      </TableCell>
-                      <TableCell>
-                        <img
-                          src={
-                            producto.foto2_producto || "/placeholder-image.jpg"
-                          }
-                          alt="foto"
-                          className="w-12 h-12 object-cover rounded"
-                        />
-                      </TableCell>
-                      <TableCell className="flex gap-2 justify-center">
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          className="flex items-center gap-1"
-                          onClick={() => openEditDialog(producto)}
-                        >
-                          <Edit className="w-4 h-4" /> Editar
-                        </Button>
-                        <Button
-                          size="sm"
-                          variant="destructive"
-                          className="flex items-center gap-1"
-                          onClick={() => openDeleteDialog(producto)}
-                        >
-                          <Trash2 className="w-4 h-4" /> Eliminar
-                        </Button>
-                      </TableCell>
+              <div className="min-w-full">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Marca</TableHead>
+                      <TableHead>Código</TableHead>
+                      <TableHead>Nombre</TableHead>
+                      <TableHead>Descripción</TableHead>
+                      <TableHead>Categoría</TableHead>
+                      <TableHead>Stock</TableHead>
+                      <TableHead>Precio</TableHead>
+                      <TableHead>Foto 1</TableHead>
+                      <TableHead>Foto 2</TableHead>
+                      <TableHead className="text-center">Acciones</TableHead>
                     </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
+                  </TableHeader>
+                  <TableBody>
+                    {productosFiltrados.map((producto, index) => (
+                      <TableRow
+                        key={
+                          producto.id_producto
+                            ? String(producto.id_producto)
+                            : `producto-${index}`
+                        }
+                      >
+                        <TableCell>
+                          {getMarcaNombre(producto.id_marca_producto)}
+                        </TableCell>
+                        <TableCell className="font-medium">
+                          {producto.codigo_producto || "-"}
+                        </TableCell>
+                        <TableCell>{producto.nombre_producto || "-"}</TableCell>
+                        <TableCell>
+                          <div
+                            className="max-w-xs truncate"
+                            title={producto.descripcion_producto || ""}
+                          >
+                            {producto.descripcion_producto || "-"}
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          {getCategoriaNombre(producto.id_categoria_producto)}
+                        </TableCell>
+                        <TableCell>{producto.stock_producto || "-"}</TableCell>
+                        <TableCell>
+                          {producto.precio_producto
+                            ? `Q${producto.precio_producto}`
+                            : "-"}
+                        </TableCell>
+                        <TableCell>
+                          <img
+                            src={
+                              producto.foto1_producto ||
+                              "/placeholder-image.jpg"
+                            }
+                            alt="foto"
+                            className="w-12 h-12 object-cover rounded"
+                          />
+                        </TableCell>
+                        <TableCell>
+                          <img
+                            src={
+                              producto.foto2_producto ||
+                              "/placeholder-image.jpg"
+                            }
+                            alt="foto"
+                            className="w-12 h-12 object-cover rounded"
+                          />
+                        </TableCell>
+                        <TableCell>
+                          <div className="flex flex-col sm:flex-row gap-2 justify-center">
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              className="flex items-center gap-1 text-xs"
+                              onClick={() => openEditDialog(producto)}
+                            >
+                              <Edit className="w-3 h-3" />
+                              <span className="hidden sm:inline">Editar</span>
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="destructive"
+                              className="flex items-center gap-1 text-xs"
+                              onClick={() => openDeleteDialog(producto)}
+                            >
+                              <Trash2 className="w-3 h-3" />
+                              <span className="hidden sm:inline">Eliminar</span>
+                            </Button>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
             </div>
           </div>
         </div>
@@ -768,11 +786,11 @@ export default function ProductosPage() {
 
       {/* Dialog para editar producto */}
       <Dialog open={editDialogOpen} onOpenChange={setEditDialogOpen}>
-        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto mx-4">
           <DialogHeader>
             <DialogTitle>Editar Producto</DialogTitle>
           </DialogHeader>
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="edit-marca">Marca</Label>
               <Select
@@ -818,7 +836,7 @@ export default function ProductosPage() {
                 placeholder="Ingrese el nombre del producto"
               />
             </div>
-            <div className="space-y-2 col-span-2">
+            <div className="space-y-2 col-span-1 sm:col-span-2">
               <Label htmlFor="edit-descripcion">Descripción</Label>
               <Textarea
                 id="edit-descripcion"
@@ -915,7 +933,7 @@ export default function ProductosPage() {
               />
             </div>
           </div>
-          <div className="flex justify-end gap-2 mt-6">
+          <div className="flex flex-col sm:flex-row justify-end gap-2 mt-6">
             <Button
               variant="outline"
               onClick={() => {
@@ -923,12 +941,13 @@ export default function ProductosPage() {
                 setSelectedProducto(null);
                 resetForm();
               }}
+              className="w-full sm:w-auto"
             >
               Cancelar
             </Button>
             <Button
               onClick={showEditConfirmation}
-              className="flex items-center gap-2"
+              className="flex items-center gap-2 w-full sm:w-auto"
             >
               <Save className="w-4 h-4" />
               Guardar
@@ -942,7 +961,7 @@ export default function ProductosPage() {
         open={confirmCreateDialogOpen}
         onOpenChange={setConfirmCreateDialogOpen}
       >
-        <DialogContent>
+        <DialogContent className="mx-4">
           <DialogHeader>
             <DialogTitle>Confirmar Creación</DialogTitle>
           </DialogHeader>
@@ -1000,17 +1019,18 @@ export default function ProductosPage() {
               </p>
             </div>
           </div>
-          <div className="flex justify-end gap-2">
+          <div className="flex flex-col sm:flex-row justify-end gap-2">
             <Button
               variant="outline"
               onClick={() => setConfirmCreateDialogOpen(false)}
+              className="w-full sm:w-auto"
             >
               Cancelar
             </Button>
             <Button
               onClick={handleCreateProducto}
               disabled={isSubmitting}
-              className="flex items-center gap-2"
+              className="flex items-center gap-2 w-full sm:w-auto"
             >
               <Save className="w-4 h-4" />
               {isSubmitting ? "Creando..." : "Crear Producto"}
@@ -1024,7 +1044,7 @@ export default function ProductosPage() {
         open={confirmEditDialogOpen}
         onOpenChange={setConfirmEditDialogOpen}
       >
-        <DialogContent>
+        <DialogContent className="mx-4">
           <DialogHeader>
             <DialogTitle>Confirmar Actualización</DialogTitle>
           </DialogHeader>
@@ -1082,17 +1102,18 @@ export default function ProductosPage() {
               </p>
             </div>
           </div>
-          <div className="flex justify-end gap-2">
+          <div className="flex flex-col sm:flex-row justify-end gap-2">
             <Button
               variant="outline"
               onClick={() => setConfirmEditDialogOpen(false)}
+              className="w-full sm:w-auto"
             >
               Cancelar
             </Button>
             <Button
               onClick={handleEditProducto}
               disabled={isSubmitting}
-              className="flex items-center gap-2"
+              className="flex items-center gap-2 w-full sm:w-auto"
             >
               <Save className="w-4 h-4" />
               {isSubmitting ? "Actualizando..." : "Actualizar Producto"}

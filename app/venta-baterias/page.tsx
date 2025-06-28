@@ -373,24 +373,24 @@ export default function VentaBateriasPage() {
   return (
     <div className="min-h-screen bg-gray-50">
       <Header title="Gestión de Ventas de Baterías - Taller Franco" />
-      <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-        <div className="px-4 py-6 sm:px-0">
-          <div className="bg-white shadow rounded-lg p-6">
-            <div className="flex justify-between items-center mb-6">
-              <h2 className="text-2xl font-bold text-gray-900">
+      <main className="max-w-7xl mx-auto py-4 sm:py-6 px-2 sm:px-6 lg:px-8">
+        <div className="px-2 sm:px-0">
+          <div className="bg-white shadow rounded-lg p-4 sm:p-6">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+              <h2 className="text-xl sm:text-2xl font-bold text-gray-900">
                 Gestión de Ventas de Baterías
               </h2>
               <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
                 <DialogTrigger asChild>
-                  <Button className="flex items-center gap-2">
+                  <Button className="flex items-center gap-2 w-full sm:w-auto">
                     <Plus className="w-4 h-4" /> Registrar Venta de Batería
                   </Button>
                 </DialogTrigger>
-                <DialogContent className="max-w-2xl">
+                <DialogContent className="max-w-2xl mx-4">
                   <DialogHeader>
                     <DialogTitle>Registrar Venta de Batería</DialogTitle>
                   </DialogHeader>
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div className="space-y-2">
                       <Label htmlFor="codigo_bateria">Código de Batería</Label>
                       <Input
@@ -419,8 +419,8 @@ export default function VentaBateriasPage() {
                               key={producto.id_producto}
                               value={producto.id_producto.toString()}
                             >
-                              {producto.codigo_producto} -{" "}
-                              {producto.nombre_producto}
+                              {producto.codigo_producto}{" "}
+                              {/* - {producto.nombre_producto} */}
                             </SelectItem>
                           ))}
                         </SelectContent>
@@ -448,7 +448,7 @@ export default function VentaBateriasPage() {
                         placeholder="Ej: 12 meses"
                       />
                     </div>
-                    <div className="space-y-2 col-span-2">
+                    <div className="space-y-2 col-span-1 sm:col-span-2">
                       <Label htmlFor="comprador">Comprador</Label>
                       <Input
                         id="comprador"
@@ -460,19 +460,20 @@ export default function VentaBateriasPage() {
                       />
                     </div>
                   </div>
-                  <div className="flex justify-end gap-2 mt-6">
+                  <div className="flex flex-col sm:flex-row justify-end gap-2 mt-6">
                     <Button
                       variant="outline"
                       onClick={() => {
                         setDialogOpen(false);
                         resetForm();
                       }}
+                      className="w-full sm:w-auto"
                     >
                       Cancelar
                     </Button>
                     <Button
                       onClick={showCreateConfirmation}
-                      className="flex items-center gap-2"
+                      className="flex items-center gap-2 w-full sm:w-auto"
                     >
                       <Save className="w-4 h-4" />
                       Guardar
@@ -482,63 +483,74 @@ export default function VentaBateriasPage() {
               </Dialog>
             </div>
 
+            {/* Tabla responsive */}
             <div className="overflow-x-auto">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Código de Batería</TableHead>
-                    <TableHead>Tipo de Batería</TableHead>
-                    <TableHead>Fecha de Venta</TableHead>
-                    <TableHead>Garantía</TableHead>
-                    <TableHead>Comprador</TableHead>
-                    <TableHead className="text-center">Acciones</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {ventasBaterias.map((ventaBateria, index) => {
-                    const productoInfo = getProductoInfo(
-                      ventaBateria.id_producto
-                    );
-                    return (
-                      <TableRow
-                        key={
-                          ventaBateria.id_venta_bateria
-                            ? String(ventaBateria.id_venta_bateria)
-                            : `venta-${index}`
-                        }
-                      >
-                        <TableCell>{ventaBateria.codigo_bateria}</TableCell>
-                        <TableCell>{productoInfo.codigo}</TableCell>
-                        <TableCell>
-                          {new Date(
-                            ventaBateria.fecha_venta
-                          ).toLocaleDateString()}
-                        </TableCell>
-                        <TableCell>{ventaBateria.garantia}</TableCell>
-                        <TableCell>{ventaBateria.comprador || "-"}</TableCell>
-                        <TableCell className="flex gap-2 justify-center">
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            className="flex items-center gap-1"
-                            onClick={() => openEditDialog(ventaBateria)}
-                          >
-                            <Edit className="w-4 h-4" /> Editar
-                          </Button>
-                          <Button
-                            size="sm"
-                            variant="destructive"
-                            className="flex items-center gap-1"
-                            onClick={() => openDeleteDialog(ventaBateria)}
-                          >
-                            <Trash2 className="w-4 h-4" /> Eliminar
-                          </Button>
-                        </TableCell>
-                      </TableRow>
-                    );
-                  })}
-                </TableBody>
-              </Table>
+              <div className="min-w-full">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Código de Batería</TableHead>
+                      <TableHead>Tipo de Batería</TableHead>
+                      <TableHead>Fecha de Venta</TableHead>
+                      <TableHead>Garantía</TableHead>
+                      <TableHead>Comprador</TableHead>
+                      <TableHead className="text-center">Acciones</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {ventasBaterias.map((ventaBateria, index) => {
+                      const productoInfo = getProductoInfo(
+                        ventaBateria.id_producto
+                      );
+                      return (
+                        <TableRow
+                          key={
+                            ventaBateria.id_venta_bateria
+                              ? String(ventaBateria.id_venta_bateria)
+                              : `venta-${index}`
+                          }
+                        >
+                          <TableCell className="font-medium">
+                            {ventaBateria.codigo_bateria}
+                          </TableCell>
+                          <TableCell>{productoInfo.codigo}</TableCell>
+                          <TableCell>
+                            {new Date(
+                              ventaBateria.fecha_venta
+                            ).toLocaleDateString()}
+                          </TableCell>
+                          <TableCell>{ventaBateria.garantia}</TableCell>
+                          <TableCell>{ventaBateria.comprador || "-"}</TableCell>
+                          <TableCell>
+                            <div className="flex flex-col sm:flex-row gap-2 justify-center">
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                className="flex items-center gap-1 text-xs"
+                                onClick={() => openEditDialog(ventaBateria)}
+                              >
+                                <Edit className="w-3 h-3" />
+                                <span className="hidden sm:inline">Editar</span>
+                              </Button>
+                              <Button
+                                size="sm"
+                                variant="destructive"
+                                className="flex items-center gap-1 text-xs"
+                                onClick={() => openDeleteDialog(ventaBateria)}
+                              >
+                                <Trash2 className="w-3 h-3" />
+                                <span className="hidden sm:inline">
+                                  Eliminar
+                                </span>
+                              </Button>
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      );
+                    })}
+                  </TableBody>
+                </Table>
+              </div>
             </div>
           </div>
         </div>
@@ -546,11 +558,11 @@ export default function VentaBateriasPage() {
 
       {/* Dialog para editar venta de batería */}
       <Dialog open={editDialogOpen} onOpenChange={setEditDialogOpen}>
-        <DialogContent className="max-w-2xl">
+        <DialogContent className="max-w-2xl mx-4">
           <DialogHeader>
             <DialogTitle>Editar Venta de Batería</DialogTitle>
           </DialogHeader>
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="edit-codigo_bateria">Código de Batería</Label>
               <Input
@@ -606,7 +618,7 @@ export default function VentaBateriasPage() {
                 placeholder="Ej: 12 meses"
               />
             </div>
-            <div className="space-y-2 col-span-2">
+            <div className="space-y-2 col-span-1 sm:col-span-2">
               <Label htmlFor="edit-comprador">Comprador</Label>
               <Input
                 id="edit-comprador"
@@ -616,7 +628,7 @@ export default function VentaBateriasPage() {
               />
             </div>
           </div>
-          <div className="flex justify-end gap-2 mt-6">
+          <div className="flex flex-col sm:flex-row justify-end gap-2 mt-6">
             <Button
               variant="outline"
               onClick={() => {
@@ -624,12 +636,13 @@ export default function VentaBateriasPage() {
                 setSelectedVentaBateria(null);
                 resetForm();
               }}
+              className="w-full sm:w-auto"
             >
               Cancelar
             </Button>
             <Button
               onClick={showEditConfirmation}
-              className="flex items-center gap-2"
+              className="flex items-center gap-2 w-full sm:w-auto"
             >
               <Save className="w-4 h-4" />
               Guardar
@@ -643,7 +656,7 @@ export default function VentaBateriasPage() {
         open={confirmCreateDialogOpen}
         onOpenChange={setConfirmCreateDialogOpen}
       >
-        <DialogContent>
+        <DialogContent className="mx-4">
           <DialogHeader>
             <DialogTitle>Confirmar Registro</DialogTitle>
           </DialogHeader>
@@ -679,17 +692,18 @@ export default function VentaBateriasPage() {
               </p>
             </div>
           </div>
-          <div className="flex justify-end gap-2">
+          <div className="flex flex-col sm:flex-row justify-end gap-2">
             <Button
               variant="outline"
               onClick={() => setConfirmCreateDialogOpen(false)}
+              className="w-full sm:w-auto"
             >
               Cancelar
             </Button>
             <Button
               onClick={handleCreateVentaBateria}
               disabled={isSubmitting}
-              className="flex items-center gap-2"
+              className="flex items-center gap-2 w-full sm:w-auto"
             >
               <Save className="w-4 h-4" />
               {isSubmitting ? "Registrando..." : "Registrar Venta"}
@@ -703,7 +717,7 @@ export default function VentaBateriasPage() {
         open={confirmEditDialogOpen}
         onOpenChange={setConfirmEditDialogOpen}
       >
-        <DialogContent>
+        <DialogContent className="mx-4">
           <DialogHeader>
             <DialogTitle>Confirmar Actualización</DialogTitle>
           </DialogHeader>
@@ -739,17 +753,18 @@ export default function VentaBateriasPage() {
               </p>
             </div>
           </div>
-          <div className="flex justify-end gap-2">
+          <div className="flex flex-col sm:flex-row justify-end gap-2">
             <Button
               variant="outline"
               onClick={() => setConfirmEditDialogOpen(false)}
+              className="w-full sm:w-auto"
             >
               Cancelar
             </Button>
             <Button
               onClick={handleEditVentaBateria}
               disabled={isSubmitting}
-              className="flex items-center gap-2"
+              className="flex items-center gap-2 w-full sm:w-auto"
             >
               <Save className="w-4 h-4" />
               {isSubmitting ? "Actualizando..." : "Actualizar Venta"}

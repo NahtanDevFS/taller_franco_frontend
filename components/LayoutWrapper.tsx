@@ -24,10 +24,10 @@ export default function LayoutWrapper({
     <div className="flex min-h-screen">
       <Sidebar />
       <div className="flex-1 flex flex-col">
-        <div className="md:hidden p-2">
+        <div className="md:hidden p-2 border-b bg-white">
           <SidebarMobile />
         </div>
-        <main className="flex-1 p-4">{children}</main>
+        <main className="flex-1 p-2 sm:p-4">{children}</main>
       </div>
     </div>
   );

@@ -36,25 +36,25 @@ export default function DashboardPage() {
       <Header title="Dashboard - Taller Franco" />
 
       {/* Main Content */}
-      <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-        <div className="px-4 py-6 sm:px-0">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <main className="max-w-7xl mx-auto py-4 sm:py-6 px-2 sm:px-6 lg:px-8">
+        <div className="px-2 sm:px-0">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
             {/* Card de Bienvenida */}
             <Card className="col-span-full">
               <CardHeader>
-                <CardTitle className="text-blue-800">
+                <CardTitle className="text-blue-800 text-lg sm:text-xl">
                   ¡Bienvenido al Sistema de Gestión de Taller Franco!
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-gray-600">
+                <p className="text-gray-600 text-sm sm:text-base">
                   Has iniciado sesión correctamente.
                 </p>
-                <p className="text-gray-600">
+                <p className="text-gray-600 text-sm sm:text-base mt-2">
                   Aquí puedes ver los productos que hay, modificarlos, agregar
                   nuevos o eliminar los que ya no están.
                 </p>
-                <p className="text-gray-600">
+                <p className="text-gray-600 text-sm sm:text-base mt-2">
                   Aquí puedes ver las baterías vendidas, modificarlas, agregar
                   nuevas o eliminar las que se devolvieron por garantía.
                 </p>
