@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { authService } from "@/lib/auth";
+import { API_ENDPOINTS } from "@/lib/config";
 import Header from "@/components/Header";
 import { Button } from "@/components/ui/button";
 import {
@@ -97,9 +98,7 @@ export default function VentaBateriasPage() {
 
   const fetchVentasBaterias = async () => {
     try {
-      const res = await fetch(
-        "https://taller-franco-backend.vercel.app/api/venta_baterias"
-      );
+      const res = await fetch(API_ENDPOINTS.VENTA_BATERIAS.BASE);
       const data = await res.json();
       console.log("Ventas de baterías:", data);
       setVentasBaterias(data);
@@ -112,9 +111,7 @@ export default function VentaBateriasPage() {
     try {
       // Aquí necesitarías un endpoint que filtre productos por categoría de baterías
       // Por ahora obtendremos todos los productos y los filtraremos en el frontend
-      const res = await fetch(
-        "https://taller-franco-backend.vercel.app/api/productos"
-      );
+      const res = await fetch(API_ENDPOINTS.PRODUCTOS.BASE);
       const data = await res.json();
       console.log("Productos:", data);
       setProductos(data);
@@ -155,22 +152,19 @@ export default function VentaBateriasPage() {
   const handleCreateVentaBateria = async () => {
     setIsSubmitting(true);
     try {
-      const res = await fetch(
-        "https://taller-franco-backend.vercel.app/api/venta_baterias",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            codigo_bateria: formData.codigo_bateria,
-            id_producto: parseInt(formData.id_producto),
-            fecha_venta: formData.fecha_venta,
-            garantia: formData.garantia,
-            comprador: formData.comprador || null,
-          }),
-        }
-      );
+      const res = await fetch(API_ENDPOINTS.VENTA_BATERIAS.BASE, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          codigo_bateria: formData.codigo_bateria,
+          id_producto: parseInt(formData.id_producto),
+          fecha_venta: formData.fecha_venta,
+          garantia: formData.garantia,
+          comprador: formData.comprador || null,
+        }),
+      });
 
       if (res.ok) {
         const newVentaBateria = await res.json();
@@ -215,7 +209,7 @@ export default function VentaBateriasPage() {
     setIsSubmitting(true);
     try {
       const res = await fetch(
-        `https://taller-franco-backend.vercel.app/api/venta_baterias/${selectedVentaBateria.id_venta_bateria}`,
+        `${API_ENDPOINTS.VENTA_BATERIAS.BASE}/${selectedVentaBateria.id_venta_bateria}`,
         {
           method: "PUT",
           headers: {
@@ -280,7 +274,7 @@ export default function VentaBateriasPage() {
 
     try {
       const res = await fetch(
-        `https://taller-franco-backend.vercel.app/api/venta_baterias/${selectedVentaBateria.id_venta_bateria}`,
+        `${API_ENDPOINTS.VENTA_BATERIAS.BASE}/${selectedVentaBateria.id_venta_bateria}`,
         {
           method: "DELETE",
         }
