@@ -29,7 +29,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Plus, Edit, Trash2, Save, X } from "lucide-react";
+//import { Plus, Edit, Trash2, Save, X } from "lucide-react";
+import { Plus, Edit, Trash2, Save } from "lucide-react";
 import Swal from "sweetalert2";
 
 interface VentaBateria {

@@ -78,7 +78,7 @@ export default function ProductosPage() {
   const [marcas, setMarcas] = useState<Marca[]>([]);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
-  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  //const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [confirmCreateDialogOpen, setConfirmCreateDialogOpen] = useState(false);
   const [confirmEditDialogOpen, setConfirmEditDialogOpen] = useState(false);
   const [selectedProducto, setSelectedProducto] = useState<Producto | null>(

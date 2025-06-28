@@ -14,7 +14,7 @@ export default function Header({
   title = "Taller Franco",
   showUserInfo = true,
 }: HeaderProps) {
-  const router = useRouter();
+  //const router = useRouter();
   const [user, setUser] = useState<any>(null);
 
   useEffect(() => {

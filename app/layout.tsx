@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 });
 
 // Rutas públicas donde NO debe aparecer el sidebar
-const publicRoutes = ["/login", "/register", "/"];
+//const publicRoutes = ["/login", "/register", "/"];
 
 export const metadata: Metadata = {
   title: "Taller Franco",

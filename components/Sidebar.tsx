@@ -13,7 +13,7 @@ const navItems = [
 ];
 
 export default function Sidebar() {
-  const [open, setOpen] = useState(false);
+  //const [open, setOpen] = useState(false);
 
   return (
     <aside className="h-screen w-64 bg-white border-r shadow-sm hidden md:flex flex-col">
@@ -21,7 +21,7 @@ export default function Sidebar() {
         <span className="text-xl font-bold text-blue-800">Taller Franco</span>
       </div>
       <nav className="flex-1 p-4 flex flex-col gap-2">
-        {navItems.map((item, idx) => (
+        {navItems.map((item) => (
           <Link
             key={item.href}
             href={item.href}
