@@ -33,6 +33,8 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { Plus, Edit, Trash2, Save, X } from "lucide-react";
 import Swal from "sweetalert2";
+import { supabase } from "@/lib/supabase";
+import { v4 as uuidv4 } from "uuid";
 
 interface Producto {
   id_producto: number;
@@ -69,6 +71,57 @@ interface ProductoForm {
   foto1_producto: string;
   foto2_producto: string;
   id_marca_producto: string;
+}
+
+// Utilidad para convertir imagen a WebP
+async function fileToWebP(file: File): Promise<Blob> {
+  return new Promise((resolve, reject) => {
+    const img = new window.Image();
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      img.onload = () => {
+        const canvas = document.createElement("canvas");
+        canvas.width = img.width;
+        canvas.height = img.height;
+        const ctx = canvas.getContext("2d");
+        ctx?.drawImage(img, 0, 0);
+        canvas.toBlob(
+          (blob) => {
+            if (blob) resolve(blob);
+            else reject(new Error("No se pudo convertir a WebP"));
+          },
+          "image/webp",
+          0.9
+        );
+      };
+      img.onerror = reject;
+      img.src = e.target?.result as string;
+    };
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
+// Subir imagen a Supabase Storage
+async function uploadImageToSupabaseWebP(
+  file: File,
+  folder: string = "products"
+) {
+  const webpBlob = await fileToWebP(file);
+  const fileName = `${folder}/${uuidv4()}.webp`;
+  const { data, error } = await supabase.storage
+    .from(folder)
+    .upload(fileName, webpBlob, {
+      cacheControl: "3600",
+      upsert: false,
+      contentType: "image/webp",
+    });
+  if (error) throw error;
+  // Obtener URL pública
+  const { data: publicUrlData } = supabase.storage
+    .from(folder)
+    .getPublicUrl(fileName);
+  return publicUrlData.publicUrl;
 }
 
 export default function ProductosPage() {
@@ -578,28 +631,78 @@ export default function ProductosPage() {
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="foto1">URL Foto 1</Label>
+                      <Label htmlFor="foto1">Foto 1</Label>
                       <Input
                         id="foto1"
-                        type="url"
-                        value={formData.foto1_producto}
-                        onChange={(e) =>
-                          handleInputChange("foto1_producto", e.target.value)
-                        }
-                        placeholder="https://ejemplo.com/imagen.jpg"
+                        type="file"
+                        accept="image/*"
+                        onChange={async (e) => {
+                          const file = e.target.files?.[0];
+                          if (file) {
+                            try {
+                              const url = await uploadImageToSupabaseWebP(file);
+                              handleInputChange("foto1_producto", url);
+                            } catch (err) {
+                              Swal.fire({
+                                icon: "error",
+                                title: "Error",
+                                text: "No se pudo subir la imagen",
+                              });
+                            }
+                          }
+                        }}
                       />
+                      {formData.foto1_producto && (
+                        <div className="mt-2">
+                          <img
+                            src={formData.foto1_producto}
+                            alt="Foto 1"
+                            className="w-20 h-20 object-cover rounded"
+                          />
+                          <Input
+                            value={formData.foto1_producto}
+                            readOnly
+                            className="mt-1"
+                          />
+                        </div>
+                      )}
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="foto2">URL Foto 2</Label>
+                      <Label htmlFor="foto2">Foto 2</Label>
                       <Input
                         id="foto2"
-                        type="url"
-                        value={formData.foto2_producto}
-                        onChange={(e) =>
-                          handleInputChange("foto2_producto", e.target.value)
-                        }
-                        placeholder="https://ejemplo.com/imagen.jpg"
+                        type="file"
+                        accept="image/*"
+                        onChange={async (e) => {
+                          const file = e.target.files?.[0];
+                          if (file) {
+                            try {
+                              const url = await uploadImageToSupabaseWebP(file);
+                              handleInputChange("foto2_producto", url);
+                            } catch (err) {
+                              Swal.fire({
+                                icon: "error",
+                                title: "Error",
+                                text: "No se pudo subir la imagen",
+                              });
+                            }
+                          }
+                        }}
                       />
+                      {formData.foto2_producto && (
+                        <div className="mt-2">
+                          <img
+                            src={formData.foto2_producto}
+                            alt="Foto 2"
+                            className="w-20 h-20 object-cover rounded"
+                          />
+                          <Input
+                            value={formData.foto2_producto}
+                            readOnly
+                            className="mt-1"
+                          />
+                        </div>
+                      )}
                     </div>
                   </div>
                   <div className="flex flex-col sm:flex-row justify-end gap-2 mt-6">
@@ -901,28 +1004,78 @@ export default function ProductosPage() {
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="edit-foto1">URL Foto 1</Label>
+              <Label htmlFor="edit-foto1">Foto 1</Label>
               <Input
                 id="edit-foto1"
-                type="url"
-                value={formData.foto1_producto}
-                onChange={(e) =>
-                  handleInputChange("foto1_producto", e.target.value)
-                }
-                placeholder="https://ejemplo.com/imagen.jpg"
+                type="file"
+                accept="image/*"
+                onChange={async (e) => {
+                  const file = e.target.files?.[0];
+                  if (file) {
+                    try {
+                      const url = await uploadImageToSupabaseWebP(file);
+                      handleInputChange("foto1_producto", url);
+                    } catch (err) {
+                      Swal.fire({
+                        icon: "error",
+                        title: "Error",
+                        text: "No se pudo subir la imagen",
+                      });
+                    }
+                  }
+                }}
               />
+              {formData.foto1_producto && (
+                <div className="mt-2">
+                  <img
+                    src={formData.foto1_producto}
+                    alt="Foto 1"
+                    className="w-20 h-20 object-cover rounded"
+                  />
+                  <Input
+                    value={formData.foto1_producto}
+                    readOnly
+                    className="mt-1"
+                  />
+                </div>
+              )}
             </div>
             <div className="space-y-2">
-              <Label htmlFor="edit-foto2">URL Foto 2</Label>
+              <Label htmlFor="edit-foto2">Foto 2</Label>
               <Input
                 id="edit-foto2"
-                type="url"
-                value={formData.foto2_producto}
-                onChange={(e) =>
-                  handleInputChange("foto2_producto", e.target.value)
-                }
-                placeholder="https://ejemplo.com/imagen.jpg"
+                type="file"
+                accept="image/*"
+                onChange={async (e) => {
+                  const file = e.target.files?.[0];
+                  if (file) {
+                    try {
+                      const url = await uploadImageToSupabaseWebP(file);
+                      handleInputChange("foto2_producto", url);
+                    } catch (err) {
+                      Swal.fire({
+                        icon: "error",
+                        title: "Error",
+                        text: "No se pudo subir la imagen",
+                      });
+                    }
+                  }
+                }}
               />
+              {formData.foto2_producto && (
+                <div className="mt-2">
+                  <img
+                    src={formData.foto2_producto}
+                    alt="Foto 2"
+                    className="w-20 h-20 object-cover rounded"
+                  />
+                  <Input
+                    value={formData.foto2_producto}
+                    readOnly
+                    className="mt-1"
+                  />
+                </div>
+              )}
             </div>
           </div>
           <div className="flex flex-col sm:flex-row justify-end gap-2 mt-6">

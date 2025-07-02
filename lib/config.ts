@@ -1,8 +1,5 @@
 // Configuración centralizada para las URLs del backend
-export const API_BASE_URL =
-  process.env.NODE_ENV === "production"
-    ? "https://taller-franco-backend.vercel.app"
-    : "http://localhost:3001";
+export const API_BASE_URL = "https://taller-franco-backend.vercel.app";
 
 export const API_ENDPOINTS = {
   AUTH: {
