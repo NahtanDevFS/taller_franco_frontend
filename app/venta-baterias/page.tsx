@@ -65,6 +65,17 @@ interface VentaBateriaForm {
   comprador: string;
 }
 
+// Utilidad para formatear fecha a YYYY-MM-DD (UTC)
+function formatDateToYYYYMMDD(dateString: string) {
+  if (!dateString) return "";
+  const date = new Date(dateString);
+  // Ajustar a UTC para evitar desfase
+  const yyyy = date.getUTCFullYear();
+  const mm = String(date.getUTCMonth() + 1).padStart(2, "0");
+  const dd = String(date.getUTCDate()).padStart(2, "0");
+  return `${yyyy}-${mm}-${dd}`;
+}
+
 export default function VentaBateriasPage() {
   const router = useRouter();
   const [loading, setLoading] = useState(true);
@@ -321,7 +332,7 @@ export default function VentaBateriasPage() {
     setFormData({
       codigo_bateria: ventaBateria.codigo_bateria,
       id_producto: ventaBateria.id_producto.toString(),
-      fecha_venta: ventaBateria.fecha_venta,
+      fecha_venta: formatDateToYYYYMMDD(ventaBateria.fecha_venta),
       garantia: ventaBateria.garantia,
       comprador: ventaBateria.comprador || "",
     });
@@ -510,9 +521,7 @@ export default function VentaBateriasPage() {
                           </TableCell>
                           <TableCell>{productoInfo.codigo}</TableCell>
                           <TableCell>
-                            {new Date(
-                              ventaBateria.fecha_venta
-                            ).toLocaleDateString()}
+                            {formatDateToYYYYMMDD(ventaBateria.fecha_venta)}
                           </TableCell>
                           <TableCell>{ventaBateria.garantia}</TableCell>
                           <TableCell>{ventaBateria.comprador || "-"}</TableCell>

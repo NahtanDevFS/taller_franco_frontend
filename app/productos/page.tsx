@@ -107,21 +107,63 @@ async function uploadImageToSupabaseWebP(
   file: File,
   folder: string = "products"
 ) {
-  const webpBlob = await fileToWebP(file);
-  const fileName = `${folder}/${uuidv4()}.webp`;
-  const { data, error } = await supabase.storage
-    .from(folder)
-    .upload(fileName, webpBlob, {
-      cacheControl: "3600",
-      upsert: false,
-      contentType: "image/webp",
-    });
-  if (error) throw error;
-  // Obtener URL pública
-  const { data: publicUrlData } = supabase.storage
-    .from(folder)
-    .getPublicUrl(fileName);
-  return publicUrlData.publicUrl;
+  try {
+    console.log("Iniciando subida de imagen:", file.name);
+
+    // Verificar configuración de Supabase
+    if (
+      !process.env.NEXT_PUBLIC_SUPABASE_URL ||
+      !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+    ) {
+      throw new Error("Configuración de Supabase no encontrada");
+    }
+
+    const webpBlob = await fileToWebP(file);
+    console.log("Imagen convertida a WebP, tamaño:", webpBlob.size);
+
+    const fileName = `${folder}/${uuidv4()}.webp`;
+    console.log("Nombre del archivo:", fileName);
+
+    // Intentar acceder directamente al bucket sin verificar primero
+    console.log("Intentando acceder directamente al bucket:", folder);
+
+    const { data, error } = await supabase.storage
+      .from(folder)
+      .upload(fileName, webpBlob, {
+        cacheControl: "3600",
+        upsert: false,
+        contentType: "image/webp",
+      });
+
+    if (error) {
+      console.error("Error al subir a Supabase:", error);
+
+      // Manejar errores específicos de RLS
+      if (
+        error.message?.includes("row-level security policy") ||
+        (error as any).statusCode === "403"
+      ) {
+        throw new Error(
+          `Error de permisos: Las políticas de seguridad (RLS) están bloqueando la subida. Error: ${error.message}`
+        );
+      }
+
+      throw error;
+    }
+
+    console.log("Archivo subido exitosamente:", data);
+
+    // Obtener URL pública
+    const { data: publicUrlData } = supabase.storage
+      .from(folder)
+      .getPublicUrl(fileName);
+
+    console.log("URL pública generada:", publicUrlData.publicUrl);
+    return publicUrlData.publicUrl;
+  } catch (error) {
+    console.error("Error en uploadImageToSupabaseWebP:", error);
+    throw error;
+  }
 }
 
 export default function ProductosPage() {
@@ -154,6 +196,19 @@ export default function ProductosPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
+    // Verificar configuración de Supabase
+    console.log("Verificando configuración de Supabase...");
+    console.log(
+      "NEXT_PUBLIC_SUPABASE_URL:",
+      process.env.NEXT_PUBLIC_SUPABASE_URL ? "Configurada" : "NO CONFIGURADA"
+    );
+    console.log(
+      "NEXT_PUBLIC_SUPABASE_ANON_KEY:",
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+        ? "Configurada"
+        : "NO CONFIGURADA"
+    );
+
     if (!authService.isAuthenticated()) {
       router.push("/login");
       return;
@@ -256,9 +311,10 @@ export default function ProductosPage() {
           precio_producto: formData.precio_producto || null,
           foto1_producto: formData.foto1_producto || null,
           foto2_producto: formData.foto2_producto || null,
-          id_marca_producto: formData.id_marca_producto
-            ? parseInt(formData.id_marca_producto)
-            : null,
+          id_marca_producto:
+            formData.id_marca_producto && formData.id_marca_producto !== ""
+              ? parseInt(formData.id_marca_producto)
+              : null,
         }),
       });
 
@@ -274,6 +330,7 @@ export default function ProductosPage() {
           text: "Producto creado exitosamente",
           confirmButtonColor: "#3085d6",
           confirmButtonText: "Aceptar",
+          backdrop: false,
         });
       } else {
         const errorData = await res.json();
@@ -283,6 +340,7 @@ export default function ProductosPage() {
           text: errorData.error,
           confirmButtonColor: "#d33",
           confirmButtonText: "Aceptar",
+          backdrop: false,
         });
       }
     } catch (error) {
@@ -293,6 +351,7 @@ export default function ProductosPage() {
         text: "Error al crear el producto",
         confirmButtonColor: "#d33",
         confirmButtonText: "Aceptar",
+        backdrop: false,
       });
     } finally {
       setIsSubmitting(false);
@@ -327,9 +386,11 @@ export default function ProductosPage() {
             precio_producto: formData.precio_producto || null,
             foto1_producto: formData.foto1_producto || null,
             foto2_producto: formData.foto2_producto || null,
-            id_marca_producto: formData.id_marca_producto
-              ? parseInt(formData.id_marca_producto)
-              : null,
+            id_marca_producto:
+              formData.id_marca_producto &&
+              formData.id_marca_producto !== "no especificada"
+                ? parseInt(formData.id_marca_producto)
+                : null,
           }),
         }
       );
@@ -351,6 +412,7 @@ export default function ProductosPage() {
           text: "Producto actualizado exitosamente",
           confirmButtonColor: "#3085d6",
           confirmButtonText: "Aceptar",
+          backdrop: false,
         });
       } else {
         const errorData = await res.json();
@@ -360,6 +422,7 @@ export default function ProductosPage() {
           text: errorData.error,
           confirmButtonColor: "#d33",
           confirmButtonText: "Aceptar",
+          backdrop: false,
         });
       }
     } catch (error) {
@@ -370,6 +433,7 @@ export default function ProductosPage() {
         text: "Error al actualizar el producto",
         confirmButtonColor: "#d33",
         confirmButtonText: "Aceptar",
+        backdrop: false,
       });
     } finally {
       setIsSubmitting(false);
@@ -398,6 +462,7 @@ export default function ProductosPage() {
           text: "Producto eliminado exitosamente",
           confirmButtonColor: "#3085d6",
           confirmButtonText: "Aceptar",
+          backdrop: false,
         });
       } else {
         const errorData = await res.json();
@@ -407,6 +472,7 @@ export default function ProductosPage() {
           text: errorData.error,
           confirmButtonColor: "#d33",
           confirmButtonText: "Aceptar",
+          backdrop: false,
         });
       }
     } catch (error) {
@@ -417,6 +483,7 @@ export default function ProductosPage() {
         text: "Error al eliminar el producto",
         confirmButtonColor: "#d33",
         confirmButtonText: "Aceptar",
+        backdrop: false,
       });
     }
   };
@@ -519,6 +586,9 @@ export default function ProductosPage() {
                           <SelectValue placeholder="Seleccionar marca" />
                         </SelectTrigger>
                         <SelectContent>
+                          <SelectItem value="no especificada">
+                            No especificada
+                          </SelectItem>
                           {marcas.map((marca) => (
                             <SelectItem
                               key={marca.id_marca_producto}
@@ -640,13 +710,32 @@ export default function ProductosPage() {
                           const file = e.target.files?.[0];
                           if (file) {
                             try {
+                              console.log(
+                                "Procesando archivo:",
+                                file.name,
+                                "Tamaño:",
+                                file.size
+                              );
                               const url = await uploadImageToSupabaseWebP(file);
+                              console.log("URL obtenida:", url);
                               handleInputChange("foto1_producto", url);
+                              Swal.fire({
+                                icon: "success",
+                                title: "¡Éxito!",
+                                text: "Imagen subida correctamente",
+                                timer: 2000,
+                                showConfirmButton: false,
+                              });
                             } catch (err) {
+                              console.error("Error al subir imagen:", err);
                               Swal.fire({
                                 icon: "error",
                                 title: "Error",
-                                text: "No se pudo subir la imagen",
+                                text: `No se pudo subir la imagen: ${
+                                  err instanceof Error
+                                    ? err.message
+                                    : "Error desconocido"
+                                }`,
                               });
                             }
                           }
@@ -677,13 +766,32 @@ export default function ProductosPage() {
                           const file = e.target.files?.[0];
                           if (file) {
                             try {
+                              console.log(
+                                "Procesando archivo:",
+                                file.name,
+                                "Tamaño:",
+                                file.size
+                              );
                               const url = await uploadImageToSupabaseWebP(file);
+                              console.log("URL obtenida:", url);
                               handleInputChange("foto2_producto", url);
+                              Swal.fire({
+                                icon: "success",
+                                title: "¡Éxito!",
+                                text: "Imagen subida correctamente",
+                                timer: 2000,
+                                showConfirmButton: false,
+                              });
                             } catch (err) {
+                              console.error("Error al subir imagen:", err);
                               Swal.fire({
                                 icon: "error",
                                 title: "Error",
-                                text: "No se pudo subir la imagen",
+                                text: `No se pudo subir la imagen: ${
+                                  err instanceof Error
+                                    ? err.message
+                                    : "Error desconocido"
+                                }`,
                               });
                             }
                           }
@@ -828,24 +936,46 @@ export default function ProductosPage() {
                             : "-"}
                         </TableCell>
                         <TableCell>
-                          <img
-                            src={
-                              producto.foto1_producto ||
-                              "/placeholder-image.jpg"
-                            }
-                            alt="foto"
-                            className="w-12 h-12 object-cover rounded"
-                          />
+                          {producto.foto1_producto ? (
+                            <img
+                              src={producto.foto1_producto}
+                              alt="Foto 1"
+                              className="w-12 h-12 object-cover rounded"
+                              onError={(e) => {
+                                e.currentTarget.src = "/file.svg";
+                                e.currentTarget.alt = "Sin imagen";
+                              }}
+                            />
+                          ) : (
+                            <div className="w-12 h-12 bg-gray-100 rounded flex items-center justify-center">
+                              <img
+                                src="/file.svg"
+                                alt="Sin imagen"
+                                className="w-6 h-6 text-gray-400"
+                              />
+                            </div>
+                          )}
                         </TableCell>
                         <TableCell>
-                          <img
-                            src={
-                              producto.foto2_producto ||
-                              "/placeholder-image.jpg"
-                            }
-                            alt="foto"
-                            className="w-12 h-12 object-cover rounded"
-                          />
+                          {producto.foto2_producto ? (
+                            <img
+                              src={producto.foto2_producto}
+                              alt="Foto 2"
+                              className="w-12 h-12 object-cover rounded"
+                              onError={(e) => {
+                                e.currentTarget.src = "/file.svg";
+                                e.currentTarget.alt = "Sin imagen";
+                              }}
+                            />
+                          ) : (
+                            <div className="w-12 h-12 bg-gray-100 rounded flex items-center justify-center">
+                              <img
+                                src="/file.svg"
+                                alt="Sin imagen"
+                                className="w-6 h-6 text-gray-400"
+                              />
+                            </div>
+                          )}
                         </TableCell>
                         <TableCell>
                           <div className="flex flex-col sm:flex-row gap-2 justify-center">
@@ -898,6 +1028,7 @@ export default function ProductosPage() {
                   <SelectValue placeholder="Seleccionar marca" />
                 </SelectTrigger>
                 <SelectContent>
+                  <SelectItem value="">No especificada</SelectItem>
                   {marcas.map((marca) => (
                     <SelectItem
                       key={marca.id_marca_producto}
@@ -1013,13 +1144,32 @@ export default function ProductosPage() {
                   const file = e.target.files?.[0];
                   if (file) {
                     try {
+                      console.log(
+                        "Procesando archivo:",
+                        file.name,
+                        "Tamaño:",
+                        file.size
+                      );
                       const url = await uploadImageToSupabaseWebP(file);
+                      console.log("URL obtenida:", url);
                       handleInputChange("foto1_producto", url);
+                      Swal.fire({
+                        icon: "success",
+                        title: "¡Éxito!",
+                        text: "Imagen subida correctamente",
+                        timer: 2000,
+                        showConfirmButton: false,
+                      });
                     } catch (err) {
+                      console.error("Error al subir imagen:", err);
                       Swal.fire({
                         icon: "error",
                         title: "Error",
-                        text: "No se pudo subir la imagen",
+                        text: `No se pudo subir la imagen: ${
+                          err instanceof Error
+                            ? err.message
+                            : "Error desconocido"
+                        }`,
                       });
                     }
                   }
@@ -1050,13 +1200,32 @@ export default function ProductosPage() {
                   const file = e.target.files?.[0];
                   if (file) {
                     try {
+                      console.log(
+                        "Procesando archivo:",
+                        file.name,
+                        "Tamaño:",
+                        file.size
+                      );
                       const url = await uploadImageToSupabaseWebP(file);
+                      console.log("URL obtenida:", url);
                       handleInputChange("foto2_producto", url);
+                      Swal.fire({
+                        icon: "success",
+                        title: "¡Éxito!",
+                        text: "Imagen subida correctamente",
+                        timer: 2000,
+                        showConfirmButton: false,
+                      });
                     } catch (err) {
+                      console.error("Error al subir imagen:", err);
                       Swal.fire({
                         icon: "error",
                         title: "Error",
-                        text: "No se pudo subir la imagen",
+                        text: `No se pudo subir la imagen: ${
+                          err instanceof Error
+                            ? err.message
+                            : "Error desconocido"
+                        }`,
                       });
                     }
                   }
