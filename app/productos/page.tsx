@@ -181,6 +181,7 @@ export default function ProductosPage() {
     null
   );
   const [filtroCategoria, setFiltroCategoria] = useState<string>("todas");
+  const [busqueda, setBusqueda] = useState<string>("");
   const [formData, setFormData] = useState<ProductoForm>({
     codigo_producto: "",
     nombre_producto: "",
@@ -533,14 +534,31 @@ export default function ProductosPage() {
     setConfirmEditDialogOpen(true);
   };
 
-  // Filtrar productos por categoría
-  const productosFiltrados =
-    filtroCategoria === "todas"
-      ? productos
-      : productos.filter(
-          (producto) =>
-            producto.id_categoria_producto?.toString() === filtroCategoria
-        );
+  // Filtrar productos por categoría y búsqueda
+  const productosFiltrados = productos.filter((producto) => {
+    // Filtro por categoría
+    const cumpleCategoria =
+      filtroCategoria === "todas" ||
+      producto.id_categoria_producto?.toString() === filtroCategoria;
+
+    // Filtro por búsqueda
+    const cumpleBusqueda =
+      !busqueda ||
+      (producto.codigo_producto &&
+        producto.codigo_producto
+          .toLowerCase()
+          .includes(busqueda.toLowerCase())) ||
+      (producto.nombre_producto &&
+        producto.nombre_producto
+          .toLowerCase()
+          .includes(busqueda.toLowerCase())) ||
+      (producto.descripcion_producto &&
+        producto.descripcion_producto
+          .toLowerCase()
+          .includes(busqueda.toLowerCase()));
+
+    return cumpleCategoria && cumpleBusqueda;
+  });
 
   if (loading) {
     return (
@@ -836,8 +854,36 @@ export default function ProductosPage() {
               </Dialog>
             </div>
 
-            {/* Filtro por categoría */}
-            <div className="mb-6">
+            {/* Filtros y búsqueda */}
+            <div className="mb-6 space-y-4">
+              {/* Barra de búsqueda */}
+              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+                <Label htmlFor="busqueda" className="text-sm font-medium">
+                  Buscar productos:
+                </Label>
+                <div className="relative w-full sm:w-80">
+                  <Input
+                    id="busqueda"
+                    type="text"
+                    placeholder="Buscar por código, nombre o descripción..."
+                    value={busqueda}
+                    onChange={(e) => setBusqueda(e.target.value)}
+                    className="pr-10"
+                  />
+                  {busqueda && (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => setBusqueda("")}
+                      className="absolute right-1 top-1/2 transform -translate-y-1/2 h-8 w-8 p-0"
+                    >
+                      <X className="w-4 h-4" />
+                    </Button>
+                  )}
+                </div>
+              </div>
+
+              {/* Filtro por categoría */}
               <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
                 <Label
                   htmlFor="filtro-categoria"
@@ -864,22 +910,31 @@ export default function ProductosPage() {
                     ))}
                   </SelectContent>
                 </Select>
-                {filtroCategoria !== "todas" && (
+                {(filtroCategoria !== "todas" || busqueda) && (
                   <Button
                     variant="outline"
                     size="sm"
-                    onClick={() => setFiltroCategoria("todas")}
+                    onClick={() => {
+                      setFiltroCategoria("todas");
+                      setBusqueda("");
+                    }}
                     className="flex items-center gap-1 w-full sm:w-auto"
                   >
                     <X className="w-4 h-4" />
-                    Limpiar filtro
+                    Limpiar filtros
                   </Button>
                 )}
               </div>
-              {filtroCategoria !== "todas" && (
-                <p className="text-sm text-gray-600 mt-2">
+
+              {/* Información de resultados */}
+              {(filtroCategoria !== "todas" || busqueda) && (
+                <p className="text-sm text-gray-600">
                   Mostrando {productosFiltrados.length} de {productos.length}{" "}
                   productos
+                  {busqueda && <span> que coinciden con: {busqueda}</span>}
+                  {filtroCategoria !== "todas" && (
+                    <span> en la categoría seleccionada</span>
+                  )}
                 </p>
               )}
             </div>

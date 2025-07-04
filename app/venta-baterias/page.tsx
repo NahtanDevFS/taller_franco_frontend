@@ -31,7 +31,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 //import { Plus, Edit, Trash2, Save, X } from "lucide-react";
-import { Plus, Edit, Trash2, Save } from "lucide-react";
+import { Plus, Edit, Trash2, Save, X } from "lucide-react";
 import Swal from "sweetalert2";
 
 interface VentaBateria {
@@ -96,6 +96,7 @@ export default function VentaBateriasPage() {
     comprador: "",
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [busqueda, setBusqueda] = useState<string>("");
 
   useEffect(() => {
     if (!authService.isAuthenticated()) {
@@ -365,6 +366,13 @@ export default function VentaBateriasPage() {
     setConfirmEditDialogOpen(true);
   };
 
+  // Filtrar ventas de baterías por código de batería
+  const ventasBateriasFiltradas = ventasBaterias.filter(
+    (ventaBateria) =>
+      !busqueda ||
+      ventaBateria.codigo_bateria.toLowerCase().includes(busqueda.toLowerCase())
+  );
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -489,6 +497,41 @@ export default function VentaBateriasPage() {
               </Dialog>
             </div>
 
+            {/* Barra de búsqueda */}
+            <div className="mb-6">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+                <Label htmlFor="busqueda" className="text-sm font-medium">
+                  Buscar batería:
+                </Label>
+                <div className="relative w-full sm:w-80">
+                  <Input
+                    id="busqueda"
+                    type="text"
+                    placeholder="Buscar por código de batería..."
+                    value={busqueda}
+                    onChange={(e) => setBusqueda(e.target.value)}
+                    className="pr-10"
+                  />
+                  {busqueda && (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => setBusqueda("")}
+                      className="absolute right-1 top-1/2 transform -translate-y-1/2 h-8 w-8 p-0"
+                    >
+                      <X className="w-4 h-4" />
+                    </Button>
+                  )}
+                </div>
+              </div>
+              {busqueda && (
+                <p className="text-sm text-gray-600 mt-2">
+                  Mostrando {ventasBateriasFiltradas.length} de{" "}
+                  {ventasBaterias.length} ventas que coinciden con: {busqueda}
+                </p>
+              )}
+            </div>
+
             {/* Tabla responsive */}
             <div className="overflow-x-auto">
               <div className="min-w-full">
@@ -504,7 +547,7 @@ export default function VentaBateriasPage() {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {ventasBaterias.map((ventaBateria, index) => {
+                    {ventasBateriasFiltradas.map((ventaBateria, index) => {
                       const productoInfo = getProductoInfo(
                         ventaBateria.id_producto
                       );
