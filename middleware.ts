@@ -14,9 +14,9 @@ export function middleware(request: NextRequest) {
   }
 
   // Si el usuario no tiene token y está intentando acceder a una ruta protegida
-  // if (!token && !pathname.startsWith("/login")) {
-  //   return NextResponse.redirect(new URL("/login", request.url));
-  // }
+  if (!token && !pathname.startsWith("/login")) {
+    return NextResponse.redirect(new URL("/login", request.url));
+  }
 
   return NextResponse.next();
 }
