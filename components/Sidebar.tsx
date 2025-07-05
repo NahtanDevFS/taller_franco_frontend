@@ -10,6 +10,7 @@ const navItems = [
   { label: "Home", href: "/dashboard" },
   { label: "Productos", href: "/productos" },
   { label: "Baterías Vendidas", href: "/venta-baterias" },
+  { label: "Calcular Precio", href: "/calcular-precio" },
 ];
 
 export default function Sidebar() {

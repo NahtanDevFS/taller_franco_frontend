@@ -396,7 +396,7 @@ export default function VentaBateriasPage() {
               </h2>
               <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
                 <DialogTrigger asChild>
-                  <Button className="flex items-center gap-2 w-full sm:w-auto">
+                  <Button className="flex items-center bg-gradient-to-r from-blue-700 to-blue-800 hover:from-blue-800 hover:to-blue-900 text-white gap-2 w-full sm:w-auto">
                     <Plus className="w-4 h-4" /> Registrar Venta de Batería
                   </Button>
                 </DialogTrigger>
