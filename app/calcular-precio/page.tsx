@@ -65,7 +65,7 @@ export default function CalcularPrecioPage() {
 
   return (
     <Card className="w-full py-0 shadow-lg border-0 border-blue-200 bg-white">
-      <Header title="Gestión de Productos - Taller Franco" />
+      <Header title="Calcular Precios - Taller Franco" />
       <CardHeader className="space-y-1 p-2 bg-gradient-to-r from-blue-800 to-blue-900 text-white rounded-t-lg">
         <CardTitle className="text-2xl font-bold text-center">
           Calcular Precio
