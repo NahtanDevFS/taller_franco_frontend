@@ -11,6 +11,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
+import Header from "@/components/Header";
 
 export default function CalcularPrecioPage() {
   const router = useRouter();
@@ -63,7 +64,8 @@ export default function CalcularPrecioPage() {
   }
 
   return (
-    <Card className="w-full shadow-lg border-0 border-blue-200 bg-white">
+    <Card className="w-full py-0 shadow-lg border-0 border-blue-200 bg-white">
+      <Header title="Gestión de Productos - Taller Franco" />
       <CardHeader className="space-y-1 p-2 bg-gradient-to-r from-blue-800 to-blue-900 text-white rounded-t-lg">
         <CardTitle className="text-2xl font-bold text-center">
           Calcular Precio
@@ -72,7 +74,7 @@ export default function CalcularPrecioPage() {
           Ingresa el costo del producto para calcular el precio de venta
         </CardDescription>
       </CardHeader>
-      <CardContent className="bg-white">
+      <CardContent className="bg-white py-6">
         <form className="space-y-4">
           {error && (
             <div className="p-3 bg-yellow-50 border border-yellow-200 rounded-md">

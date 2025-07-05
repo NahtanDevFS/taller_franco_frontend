@@ -58,6 +58,9 @@ export default function DashboardPage() {
                   Aquí puedes ver las baterías vendidas, modificarlas, agregar
                   nuevas o eliminar las que se devolvieron por garantía.
                 </p>
+                <p className="text-gray-600 text-sm sm:text-base mt-2">
+                  Aquí puedes calcular el precio de venta de un producto.
+                </p>
               </CardContent>
             </Card>
 
