@@ -192,7 +192,7 @@ export default function ProductosPage() {
     precio_producto: "",
     foto1_producto: "",
     foto2_producto: "",
-    id_marca_producto: "",
+    id_marca_producto: "no especificada",
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -280,7 +280,7 @@ export default function ProductosPage() {
       precio_producto: "",
       foto1_producto: "",
       foto2_producto: "",
-      id_marca_producto: "",
+      id_marca_producto: "no especificada",
     });
   };
 
@@ -313,7 +313,8 @@ export default function ProductosPage() {
           foto1_producto: formData.foto1_producto || null,
           foto2_producto: formData.foto2_producto || null,
           id_marca_producto:
-            formData.id_marca_producto && formData.id_marca_producto !== ""
+            formData.id_marca_producto &&
+            formData.id_marca_producto !== "no especificada"
               ? parseInt(formData.id_marca_producto)
               : null,
         }),
@@ -501,7 +502,8 @@ export default function ProductosPage() {
       precio_producto: producto.precio_producto || "",
       foto1_producto: producto.foto1_producto || "",
       foto2_producto: producto.foto2_producto || "",
-      id_marca_producto: producto.id_marca_producto?.toString() || "",
+      id_marca_producto:
+        producto.id_marca_producto?.toString() || "no especificada",
     });
     setEditDialogOpen(true);
   };
@@ -1083,7 +1085,9 @@ export default function ProductosPage() {
                   <SelectValue placeholder="Seleccionar marca" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">No especificada</SelectItem>
+                  <SelectItem value="no especificada">
+                    No especificada
+                  </SelectItem>
                   {marcas.map((marca) => (
                     <SelectItem
                       key={marca.id_marca_producto}
